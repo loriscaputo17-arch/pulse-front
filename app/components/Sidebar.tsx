@@ -2,35 +2,34 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase/client';
-import {
-  LayoutDashboard,
-  Music,
-  Settings,
-  LogOut,
-} from 'lucide-react';
+import { LayoutDashboard, Music, Settings, LogOut, ShieldCheck, Sparkles, LucideIcon } from 'lucide-react';
 
 const navItems = [
-  {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    href: '/dashboard/tracks',
-    label: 'My Tracks',
-    icon: Music,
-  },
-  {
-    href: '/dashboard/settings',
-    label: 'Settings',
-    icon: Settings,
-  },
+  { href: '/dashboard',           label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/dashboard/insights',  label: 'Insights',  icon: Sparkles        },
+  { href: '/dashboard/tracks',    label: 'Songs',     icon: Music            },
+  { href: '/dashboard/settings',  label: 'Settings',  icon: Settings         },
 ];
 
 export default function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
+  const pathname  = usePathname();
+  const router    = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+      setIsAdmin(data?.role === 'admin');
+    })();
+  }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -38,72 +37,189 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="w-64 bg-black border-r border-zinc-800 flex flex-col">
-      {/* Logo */}
-      <div className="h-20 px-6 flex items-center border-b border-zinc-800">
-        <Link href="/dashboard" className="text-2xl font-black tracking-tight">
-          <span className="text-violet-400">Pulse</span>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500&display=swap');
+
+        .sidebar {
+          width: 220px; flex-shrink: 0;
+          display: flex; flex-direction: column;
+          background: rgba(8,8,16,0.9);
+          border-right: 1px solid rgba(255,255,255,0.06);
+          backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+          height: 100vh; position: sticky; top: 0;
+        }
+        .sidebar-logo {
+          height: 64px; padding: 0 20px;
+          display: flex; align-items: center;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          gap: 10px; text-decoration: none; flex-shrink: 0;
+        }
+        .sidebar-logo-icon {
+          width: 28px; height: 28px; border-radius: 9px;
+          background: linear-gradient(135deg, #7c5cfc, #c084fc);
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .sidebar-logo-text {
+          font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 800;
+          color: #f0eeff; letter-spacing: -0.025em;
+        }
+        .sidebar-nav {
+          flex: 1; padding: 12px 10px;
+          display: flex; flex-direction: column; gap: 2px; overflow-y: auto;
+        }
+        .nav-item {
+          position: relative; display: flex; align-items: center; gap: 10px;
+          padding: 9px 12px; border-radius: 11px; text-decoration: none;
+          transition: background 0.15s, color 0.15s;
+          font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+          color: #7c7a8e; cursor: pointer;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: #c4c0d8; }
+        .nav-item.active { background: rgba(124,92,252,0.12); color: #a78bfa; }
+        .nav-item.active:hover { background: rgba(124,92,252,0.16); }
+        .nav-active-bar {
+          position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+          width: 3px; height: 18px; border-radius: 0 2px 2px 0;
+          background: linear-gradient(180deg, #a78bfa, #7c5cfc);
+        }
+        .nav-icon {
+          width: 30px; height: 30px; border-radius: 8px;
+          display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+          background: rgba(255,255,255,0.04); transition: background 0.15s;
+        }
+        .nav-item.active .nav-icon { background: rgba(124,92,252,0.2); }
+        .nav-item:hover .nav-icon { background: rgba(255,255,255,0.07); }
+        .nav-item.active:hover .nav-icon { background: rgba(124,92,252,0.25); }
+
+        /* Insights special highlight */
+        .nav-item.insights-item .nav-icon { background: rgba(167,139,250,0.08); }
+        .nav-item.insights-item:hover { color: #c4c0d8; background: rgba(167,139,250,0.08); }
+        .nav-item.insights-item:hover .nav-icon { background: rgba(167,139,250,0.15); }
+        .nav-item.insights-item.active { background: rgba(167,139,250,0.12); color: #a78bfa; }
+
+        /* Admin item */
+        .nav-item.admin-item { color: #7c7a8e; }
+        .nav-item.admin-item:hover { background: rgba(124,92,252,0.08); color: #a78bfa; }
+        .nav-item.admin-item:hover .nav-icon { background: rgba(124,92,252,0.15); }
+        .nav-item.admin-item.active { background: rgba(124,92,252,0.12); color: #a78bfa; }
+        .admin-badge {
+          margin-left: auto;
+          font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+          text-transform: uppercase; padding: 2px 6px; border-radius: 5px;
+          background: rgba(124,92,252,0.15); color: #a78bfa;
+          border: 1px solid rgba(124,92,252,0.25);
+        }
+        .new-badge {
+          margin-left: auto;
+          font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+          text-transform: uppercase; padding: 2px 6px; border-radius: 5px;
+          background: rgba(52,211,153,0.12); color: #34d399;
+          border: 1px solid rgba(52,211,153,0.25);
+        }
+
+        .nav-section-label {
+          font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 600;
+          color: rgba(124,122,142,0.5); letter-spacing: 0.1em; text-transform: uppercase;
+          padding: 10px 12px 4px;
+        }
+        .nav-divider {
+          height: 1px; background: rgba(255,255,255,0.06); margin: 8px 10px;
+        }
+        .sidebar-footer {
+          padding: 10px; border-top: 1px solid rgba(255,255,255,0.06); flex-shrink: 0;
+        }
+        .logout-btn {
+          width: 100%; display: flex; align-items: center; gap: 10px;
+          padding: 9px 12px; border-radius: 11px; border: none;
+          background: transparent; cursor: pointer;
+          font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+          color: #7c7a8e; transition: background 0.15s, color 0.15s;
+        }
+        .logout-btn:hover { background: rgba(248,113,113,0.08); color: #f87171; }
+        .logout-btn:hover .nav-icon { background: rgba(248,113,113,0.15); }
+        .logout-btn .nav-icon { background: rgba(255,255,255,0.04); transition: background 0.15s; }
+      `}</style>
+
+      <aside className="sidebar">
+        {/* Logo */}
+        <Link href="/dashboard" className="sidebar-logo">
+          <div className="sidebar-logo-icon">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 7h3l2-4 2 8 2-4h1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+          <span className="sidebar-logo-text">Pulse</span>
         </Link>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-1">
-        {navItems.map(item => (
-          <SidebarItem
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
-            active={pathname === item.href}
-          />
-        ))}
-      </nav>
+        {/* Nav */}
+        <nav className="sidebar-nav">
+          <div className="nav-section-label">Main</div>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-zinc-800">
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-xl
-                     text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition"
-        >
-          <LogOut size={16} />
-          <span className="text-sm font-medium">Logout</span>
-        </button>
-      </div>
-    </aside>
+          {navItems.map(item => (
+            <SidebarItem
+              key={item.href}
+              href={item.href}
+              label={item.label}
+              icon={item.icon}
+              active={pathname === item.href}
+              isInsights={item.href.includes('insights')}
+            />
+          ))}
+
+          {/* Admin — only visible to admins */}
+          {isAdmin && (
+            <>
+              <div className="nav-divider" />
+              <div className="nav-section-label">Admin</div>
+              <Link
+                href="/admin"
+                className={`nav-item admin-item${pathname.startsWith('/admin') ? ' active' : ''}`}
+              >
+                {pathname.startsWith('/admin') && <div className="nav-active-bar" />}
+                <div className="nav-icon">
+                  <ShieldCheck size={14} />
+                </div>
+                Admin Panel
+                <span className="admin-badge">admin</span>
+              </Link>
+            </>
+          )}
+        </nav>
+
+        {/* Footer */}
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={handleLogout}>
+            <div className="nav-icon">
+              <LogOut size={14} color="currentColor" />
+            </div>
+            Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
 function SidebarItem({
-  href,
-  icon: Icon,
-  label,
-  active,
+  href, icon: Icon, label, active, isInsights,
 }: {
   href: string;
-  icon: any;
+  icon: LucideIcon;
   label: string;
   active: boolean;
+  isInsights?: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      className={`
-        group relative flex items-center gap-3 px-4 py-3 rounded-xl transition
-        ${
-          active
-            ? 'bg-violet-500/10 text-violet-400'
-            : 'text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200'
-        }
-      `}
-    >
-      {/* Active indicator */}
-      {active && (
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-full bg-violet-400" />
+    <Link href={href} className={`nav-item${isInsights ? ' insights-item' : ''}${active ? ' active' : ''}`}>
+      {active && <div className="nav-active-bar" />}
+      <div className="nav-icon">
+        <Icon size={14} />
+      </div>
+      {label}
+      {isInsights && !active && (
+        <span className="new-badge">new</span>
       )}
-
-      <Icon size={18} />
-      <span className="text-sm font-semibold">{label}</span>
     </Link>
   );
 }
