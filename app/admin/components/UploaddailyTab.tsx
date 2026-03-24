@@ -284,7 +284,7 @@ export default function UploadTab() {
           <div>
             <div style={{ fontSize:14, color:"#c4c0d8" }}>Analyzing {files.length} screenshot{files.length !== 1 ? "s" : ""}…</div>
             <div style={{ fontSize:11, color:"#7c7a8e", marginTop:6, letterSpacing:"0.06em", textTransform:"uppercase" }}>
-              Gemini classifies each screen → extracts data → saves to DB
+              Classifing each screen → extracts data → saves to DB
             </div>
           </div>
         </div>

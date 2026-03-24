@@ -44,7 +44,7 @@ export default function TracksPage() {
       .from('tracks')
       .select('id, title, image_url, streams, listeners, saves, playlist_adds, release_date')
       .eq('artist_id', currentArtist.id)
-      .order('streams', { ascending: false })
+      .order('release_date', { ascending: false })
       .then(({ data, error }) => {
         if (!error) setTracks(data ?? []);
         setLoading(false);
@@ -95,7 +95,7 @@ export default function TracksPage() {
             <p style={{ fontSize: 13, color: '#7c7a8e', fontFamily: "'DM Sans',sans-serif", margin: '4px 0 0' }}>
               {query
                 ? `${filtered.length} risultat${filtered.length === 1 ? 'o' : 'i'} su ${tracks.length}`
-                : `${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'} · by stream`}
+                : `${tracks.length} ${tracks.length === 1 ? 'track' : 'tracks'} · by release date`}
             </p>
           </div>
 

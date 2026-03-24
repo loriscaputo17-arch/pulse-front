@@ -61,6 +61,7 @@ export default function Header() {
           display: flex;
           align-items: center;
           gap: 8px;
+          margin-left: auto;
           flex-shrink: 0;
         }
 
@@ -135,10 +136,10 @@ export default function Header() {
 
       <header className="header">
         {/* Search */}
-        <div className="header-search">
+        {/*<div className="header-search">
           <Search size={14} color="#7c7a8e" strokeWidth={2} />
           <input placeholder="Cerca tracce o artisti…" />
-        </div>
+        </div>*/}
 
         {/* Right */}
         <div className="header-right">
@@ -151,12 +152,6 @@ export default function Header() {
               onSelect={setCurrentArtist}
             />
           )}
-
-          {/* Notifications */}
-          <button className="icon-btn">
-            <Bell size={15} strokeWidth={2} />
-            <span className="notif-dot" />
-          </button>
 
           <div className="header-divider" />
 

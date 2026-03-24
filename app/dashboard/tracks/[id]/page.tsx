@@ -237,7 +237,7 @@ export default function TrackDetailPage() {
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 320, flexDirection: 'column', gap: 16 }}>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       <div style={{ width: 34, height: 34, border: '2px solid rgba(124,92,252,0.2)', borderTop: '2px solid #7c5cfc', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-      <span style={{ fontSize: 13, color: '#7c7a8e', fontFamily: "'DM Sans',sans-serif" }}>Caricamento traccia…</span>
+      <span style={{ fontSize: 13, color: '#7c7a8e', fontFamily: "'DM Sans',sans-serif" }}>Loading tracks...</span>
     </div>
   );
 

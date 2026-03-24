@@ -665,7 +665,7 @@ export default function DashboardHome() {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', minHeight: 320, flexDirection: 'column', gap: 16 }}>
         <div style={{ width: 36, height: 36, border: '2px solid rgba(124,92,252,0.2)', borderTop: '2px solid #7c5cfc', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
-        <p style={{ fontSize: 13, color: '#7c7a8e', fontFamily: "'DM Sans',sans-serif", animation: 'pulse-opacity 1.5s ease-in-out infinite' }}>Caricamento analytics…</p>
+        <p style={{ fontSize: 13, color: '#7c7a8e', fontFamily: "'DM Sans',sans-serif", animation: 'pulse-opacity 1.5s ease-in-out infinite' }}>Loading analytics…</p>
       </div>
     );
   }

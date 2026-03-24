@@ -3,13 +3,13 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export async function getTrackStats(trackId: number) {
   const res = await fetch(`${API_BASE_URL}/tracks/${trackId}/stats`);
-  if (!res.ok) throw new Error('Errore nel caricamento dati');
+  if (!res.ok) throw new Error('Data error');
   return res.json();
 }
 
 export async function getTracksConfig() {
   const res = await fetch(`${API_BASE_URL}/tracks`);
-  if (!res.ok) throw new Error('Errore nel caricamento tracce');
+  if (!res.ok) throw new Error('Data error');
   return res.json();
 }
 
@@ -19,6 +19,6 @@ export async function getArtistStats(user_id: string) {
     { credentials: 'include' }
   );
 
-  if (!res.ok) throw new Error('Errore nel caricamento dati');
+  if (!res.ok) throw new Error('Data error');
   return res.json();
 }
